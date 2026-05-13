@@ -3,6 +3,8 @@ ai-service/node_modules/
 client/node_modules/
 server/node_modules/
 
+ai-service/venv/
+
 # env files
 server/.env
 
