@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { createAppointment } from "../assets/api/api";
+import { CalendarDaysIcon, ClockIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 
 const BookAppointment = () => {
   const location = useLocation();
@@ -34,36 +36,41 @@ const BookAppointment = () => {
         reason,
       });
 
-      setStatusMsg("✅ Appointment booked successfully!");
-      setTimeout(() => {
-        navigate("/appointments"); // you can create a 'MyAppointments' page later
-      }, 800);
+      setStatusMsg("success");
+      setTimeout(() => navigate("/appointments"), 800);
     } catch (err) {
       console.error("Error booking:", err);
-      setStatusMsg("❌ Failed to book appointment. Try again.");
+      setStatusMsg("error");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-emerald-50 flex items-center justify-center py-10 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-emerald-200 p-6">
-        <h2 className="text-2xl font-bold text-emerald-800 mb-4 text-center">
-          Book Appointment
-        </h2>
-        <p className="text-center text-gray-700 mb-4">
-          With: <span className="font-semibold">{doctorName}</span>
-        </p>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-lg mx-auto"
+    >
+      <div className="glass-card-strong p-8 sm:p-10">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center shadow-lg mb-4">
+            <CalendarDaysIcon className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900">Book appointment</h2>
+          <p className="text-slate-500 mt-1 text-sm">
+            With <span className="font-semibold text-cyan-800">{decodeURIComponent(doctorName)}</span>
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date
+            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex items-center gap-1.5 mb-1.5">
+              <CalendarDaysIcon className="h-4 w-4" /> Date
             </label>
             <input
               type="date"
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="input-modern"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
@@ -72,12 +79,12 @@ const BookAppointment = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Time
+            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex items-center gap-1.5 mb-1.5">
+              <ClockIcon className="h-4 w-4" /> Time
             </label>
             <input
               type="time"
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="input-modern"
               value={time}
               onChange={(e) => setTime(e.target.value)}
               required
@@ -85,38 +92,38 @@ const BookAppointment = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Reason (optional)
+            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex items-center gap-1.5 mb-1.5">
+              <DocumentTextIcon className="h-4 w-4" /> Reason (optional)
             </label>
             <textarea
-              className="w-full border rounded-lg px-3 py-2 text-sm"
+              className="input-modern resize-none"
               rows="3"
-              placeholder="Describe your issue briefly"
+              placeholder="Briefly describe your symptoms or visit purpose"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
           </div>
 
-          {statusMsg && (
-            <p
-              className={`text-sm text-center ${
-                statusMsg.startsWith("✅") ? "text-emerald-600" : "text-red-600"
-              }`}
-            >
-              {statusMsg}
-            </p>
+          {statusMsg === "success" && (
+            <p className="text-sm text-center text-emerald-600 font-medium">Appointment booked successfully!</p>
+          )}
+          {statusMsg === "error" && (
+            <p className="text-sm text-center text-red-600 font-medium">Booking failed. Please try again.</p>
+          )}
+          {statusMsg && statusMsg !== "success" && statusMsg !== "error" && (
+            <p className="text-sm text-center text-amber-600">{statusMsg}</p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-emerald-600 text-white font-semibold py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-60"
-          >
-            {loading ? "Booking..." : "Confirm Appointment"}
+          <button type="submit" disabled={loading} className="btn-primary w-full py-3.5">
+            {loading ? "Booking…" : "Confirm appointment"}
+          </button>
+
+          <button type="button" onClick={() => navigate(-1)} className="btn-ghost w-full">
+            Go back
           </button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
